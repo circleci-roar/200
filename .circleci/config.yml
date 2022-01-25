@@ -1,17 +1,17 @@
 version: 2.1
 
 commands:
-  install-runway:
+  setup-pip-cache:
     steps:
+      - restore_cache:
+          name: Restoring pip cache
+          key: &pipcachekey pipcache-v1-pyv3-8-9-{{ checksum "Pipfile.lock" }}
       - run:
-          name: Install Runway
           command: pipenv sync
-      - run:
-          name: Validate Install
-          command: pipenv run which runway
-      - run:
-          name: Check version
-          command: pipenv run runway --version
+      - save_cache:
+          key: *pipcachekey
+          paths:
+            - ".venv"
 
 jobs:
   main:
@@ -21,7 +21,10 @@ jobs:
           PIPENV_VENV_IN_PROJECT: true
     steps:
       - checkout
-      - install-runway
+      - setup-pip-cache
+      - run:
+          name: Check version
+          command: pipenv run runway --version
 
 workflows:
   main:
