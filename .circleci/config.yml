@@ -39,7 +39,10 @@ jobs:
       - run:
           name: Check version
           command: yarn run sls --version
-
+      - setup-pip-cache
+      - run:
+          name: Check version
+          command: pipenv run runway --version
 workflows:
   main:
     jobs:
