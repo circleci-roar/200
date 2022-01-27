@@ -1,6 +1,28 @@
 version: 2.1
 
 commands:
+  change-node-version:
+    parameters:
+      version:
+        type: string
+    steps:
+      - run:
+          name: Install NVM
+          command: |
+            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      - run:
+          name: Verify NVM Install
+          shell: /bin/bash -eol pipefail
+          command: |
+            command -v nvm
+      - run:
+          name: Install Node << parameters.version >>
+          shell: /bin/bash -eol pipefail
+          command: |
+            nvm install << parameters.version >>
+            nvm use << parameters.version >>
+            nvm alias default node
+            echo "nvm use node" >> ~/.profile  
   setup-pip-cache:
     steps:
       - restore_cache:
@@ -20,6 +42,7 @@ commands:
           key: &yarncache yarn-packages-v1-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
+          shell: /bin/bash -eol pipefail
           no_output_timeout: &timeout 30m
           command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
       - save_cache:
@@ -37,9 +60,12 @@ jobs:
           PIPENV_VENV_IN_PROJECT: true
     steps:
       - checkout
+      - change-node-version:
+          version: "12"
       - setup-yarn-cache
       - run:
           name: Check version
+          shell: /bin/bash -eol pipefail
           command: yarn run sls --version
       - setup-pip-cache
       - run:
