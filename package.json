@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=12 <13"
+  },
   "dependencies": {
     "serverless": "^3.0.0"
   }
