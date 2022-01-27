@@ -13,18 +13,24 @@ commands:
           paths:
             - ".venv"
 
+  install-serverless-framework:
+    steps:
+      - run:
+          name: Install Serverless Framework
+          command: yarn add serverless
+      - run:
+          name: Validate Install
+          command: yarn run which sls
+      - run:
+          name: Check version
+          command: yarn run sls --version
+
 jobs:
   main:
     docker: 
-      - image: cimg/python:3.8.9
-        environment:
-          PIPENV_VENV_IN_PROJECT: true
+      - image: cimg/node:lts
     steps:
-      - checkout
-      - setup-pip-cache
-      - run:
-          name: Check version
-          command: pipenv run runway --version
+      - install-serverless-framework
 
 workflows:
   main:
