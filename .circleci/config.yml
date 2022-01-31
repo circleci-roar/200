@@ -1,6 +1,34 @@
 version: 2.1
 
+executors:
+  default:
+    docker: 
+      - image: cimg/python:3.8.9-node
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+    shell: /bin/bash -eol pipefail
+
 commands:
+  change-node-version:
+    parameters:
+      version:
+        type: string
+    steps:
+      - run:
+          name: Install NVM
+          command: |
+            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      - run:
+          name: Verify NVM Install
+          command: |
+            command -v nvm
+      - run:
+          name: Install Node << parameters.version >>
+          command: |
+            nvm install << parameters.version >>
+            nvm use << parameters.version >>
+            nvm alias default node
+            echo "nvm use node" >> ~/.profile  
   setup-pip-cache:
     steps:
       - restore_cache:
@@ -31,15 +59,19 @@ commands:
 
 jobs:
   main:
-    docker: 
-      - image: cimg/node:lts
+    executor: default
     steps:
       - checkout
+      - change-node-version:
+          version: "12"
       - setup-yarn-cache
       - run:
           name: Check version
           command: yarn run sls --version
-
+      - setup-pip-cache
+      - run:
+          name: Check version
+          command: pipenv run runway --version
 workflows:
   main:
     jobs:
