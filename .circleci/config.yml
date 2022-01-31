@@ -79,7 +79,16 @@ commands:
             else
               echo "Deployment Bucket Already Exists in AWS Account"
             fi
-
+  runway-deploy:
+    parameters:
+      environment:
+        type: string
+    steps:
+      - run:
+          name: Deploy << parameters.environment >>
+          environment:
+            DEPLOY_ENVIRONMENT: << parameters.environment >>
+          command: pipenv run runway deploy
 jobs:
   main:
     executor: default
@@ -102,6 +111,9 @@ jobs:
       - run:
           name: Check version
           command: pipenv run runway --version
+      - runway-deploy:
+          environment: << parameters.environment >>
+
 workflows:
   main:
     jobs:
