@@ -89,6 +89,16 @@ commands:
           environment:
             DEPLOY_ENVIRONMENT: << parameters.environment >>
           command: pipenv run runway deploy
+  serverless-deploy:
+    parameters:
+      environment:
+        type: string
+    steps:
+      - run:
+          name: Serverless Deploy << parameters.environment >>
+          environment:
+            DEPLOY_ENVIRONMENT: << parameters.environment >>
+          command: yarn run sls deploy --stage $DEPLOY_ENVIRONMENT
 jobs:
   main:
     executor: default
@@ -113,7 +123,8 @@ jobs:
           command: pipenv run runway --version
       - runway-deploy:
           environment: << parameters.environment >>
-
+      - serverless-deploy:
+          environment: << parameters.environment >>
 workflows:
   main:
     jobs:
