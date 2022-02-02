@@ -153,15 +153,14 @@ workflows:
           environment: dev
           requires: 
             - Deploy Dev      
-      # - hold:
-      #     name: Appove Prod
-      #     type: approval
-      #     requires: 
-      #       - Validate Dev
+      - hold:
+          name: Appove Prod
+          type: approval
+          requires: 
+            - Validate Dev
       - main:
           name: Deploy Prod
           context: AWS_PROD_CREDENTIALS
           environment: prod
           requires:
-            # - Appove Prod
-            - Validate Dev
+            - Appove Prod
