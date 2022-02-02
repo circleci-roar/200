@@ -125,6 +125,21 @@ jobs:
           environment: << parameters.environment >>
       - serverless-deploy:
           environment: << parameters.environment >>
+  validate:
+    executor: default
+    resource_class: small
+    parameters:
+      environment:
+        type: string
+    steps:
+      - checkout
+      - aws-cli/install
+      - run:
+          name: Validate << parameters.environment >>
+          environment:
+            DEPLOY_ENVIRONMENT: << parameters.environment >>
+          working_directory: .circleci
+          command: chmod +x validate.sh && ./validate.sh
 workflows:
   main:
     jobs:
@@ -132,11 +147,17 @@ workflows:
           name: Deploy Dev
           context: AWS_DEV_CREDENTIALS
           environment: dev
+      - validate:
+          name: Validate Dev
+          context: AWS_DEV_CREDENTIALS
+          environment: dev
+          requires: 
+            - Deploy Dev      
       - hold:
           name: Appove Prod
           type: approval
           requires: 
-            - Deploy Dev
+            - Validate Dev
       - main:
           name: Deploy Prod
           context: AWS_PROD_CREDENTIALS
