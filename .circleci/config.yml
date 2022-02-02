@@ -136,3 +136,5 @@ workflows:
           name: Deploy Prod
           context: AWS_PROD_CREDENTIALS
           environment: prod
+          requires:
+            - "Deploy Dev"
