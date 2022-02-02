@@ -110,7 +110,7 @@ jobs:
       - checkout
       - aws-cli/install
       - make-bucket:
-          bucket-name: circleci.roar200-<< parameters.environment >>-deployment-bucket
+          bucket-name: $DEPLOYMENT_BUCKET
       - change-node-version:
           version: "12"
       - setup-yarn-cache
