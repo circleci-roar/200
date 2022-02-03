@@ -1,3 +1,6 @@
+import { Logger } from "../utils/Logger";
+const logger = new Logger("Api.js");
+
 const uuid = require("uuid");
 const AWS = require("aws-sdk"); // eslint-disable-line import/no-extraneous-dependencies
 
