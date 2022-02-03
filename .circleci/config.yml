@@ -212,12 +212,14 @@ workflows:
           environment: dev
           requires: 
             - Deploy Dev      
+      - hold:
+          name: Appove Prod
+          type: approval
+          requires: 
+            - Validate Dev
       - main:
           name: Deploy Prod
           context: AWS_PROD_CREDENTIALS
           environment: prod
-          filters:
-            tags:
-              only: /([1-9][0-9]+|[0-9])\.([1-9][0-9]+|[0-9])\.([1-9][0-9]+|[0-9])/
-            branches:
-              ignore: /.*/
+          requires:
+            - Appove Prod
